@@ -43,7 +43,7 @@ def main():
         save("review.json", review)
         save("usage.json", connection.usage)
     except TranslationFailure as error:
-        save("failure.json", {"error": str(error), "usage": connection.usage})
+        save("failure.json", {"error": str(error), "usage": connection.usage, "failures": connection.failures})
         parser.exit(1, "Translation failed; see the private output directory.\n")
     print("Review draft saved; no runtime policy installed.")
 

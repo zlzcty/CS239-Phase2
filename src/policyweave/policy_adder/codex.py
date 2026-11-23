@@ -466,7 +466,15 @@ port.json must list per-policy coverage and concrete gaps, all input predicates/
         if response_format is not None:
             settings["responseFormat"] = response_format
         connection = Connection(settings)
-        response = connection(stage, json.dumps(context, ensure_ascii=False))
+        try:
+            response = connection(stage, json.dumps(context, ensure_ascii=False))
+        finally:
+            failures = getattr(connection, "failures", None)
+            if type(failures) is list and failures:
+                try:
+                    save(self.output / (name + "-failure.json"), failures)
+                except (OSError, TypeError, ValueError):
+                    pass  # never mask the model call's own error
         save(self.output / (name + "-usage.json"), connection.usage)
         save(self.output / (name + "-response.json"), dict(response=response))
         result = json.loads(response)
